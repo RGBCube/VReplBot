@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from io import BytesIO
 from typing import TYPE_CHECKING
 
-from discord.ext import commands
-from discord.ext.commands import Cog, command
+from discord import File
+from discord.ext.commands import Cog, command, param
 from jishaku.codeblocks import Codeblock, codeblock_converter
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ class REPL(
         self,
         ctx: Context,
         *,
-        code: Codeblock | None = commands.param(converter = codeblock_converter, default = None)
+        code: Codeblock | None = param(converter = codeblock_converter, default = None)
     ) -> None:
         if code is None:
             await ctx.reply("No code provided.")
@@ -40,9 +41,17 @@ class REPL(
             data = { "code": code.content },
         ) as response:
             text = await response.text()
-            await ctx.reply(
-                "```\n" + text.replace("`", "\u200B`\u200B") + "\n```"
-            )  # Zero-width space.
+            text = text.replace("`", "\u200B`\u200B")  # Zero-width space.
+
+            if len(text) + 6 > 2000:
+                await ctx.reply(
+                    "The output was too long to be sent as a message. Here is a file instead:",
+                    file = File(BytesIO(text.encode()), filename = "output.txt")
+                )
+            else:
+                await ctx.reply(
+                    "```" + text + "```"
+                )
 
 
 async def setup(bot: ReplBot) -> None:
