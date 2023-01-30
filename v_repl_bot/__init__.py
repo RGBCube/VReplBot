@@ -22,6 +22,7 @@ from discord.ext.commands import (
 class ReplBot(CommandsBot):
     ready_timestamp: float
     log_webhook: Webhook
+    session: AIOHTTPSession
 
     def __init__(self, *, token: str, webhook_url: str) -> None:
         self.token = token

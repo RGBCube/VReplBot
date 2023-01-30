@@ -11,4 +11,4 @@ jishaku = "*"
 uvloop = "*"
 
 [tool.poetry.scripts]
-bot = "bot.__main__:main"
+bot = "v_repl_bot.__main__:main"

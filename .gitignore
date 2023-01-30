@@ -1,8 +1,8 @@
 *
 
 !.gitignore
-!bot/
-!bot/cogs/
+!v_repl_bot/
+!v_repl_bot/cogs/
 !poetry.lock
 !*.py
 !*.example.json
