@@ -5,16 +5,13 @@ A simple Discord bot that runs your V code.
 ## Installation
 
 ```sh
-git clone https://github.com/RGBCube/v-repl-bot
-cd v-repl-bot
-python3 -m pip install -U poetry
-poetry install
+./install.sh
 ```
 
 ## Running
 
 ```sh
-poetry run bot
+./start.sh
 ```
 
 ## License
