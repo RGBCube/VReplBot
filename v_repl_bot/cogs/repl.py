@@ -28,17 +28,20 @@ class REPL(
     async def eval(
         self,
         ctx: Context,
+        *,
         code: Codeblock | None = commands.param(converter = codeblock_converter, default = None)
     ) -> None:
         if code is None:
             await ctx.reply("No code provided.")
+            return
 
-        with self.bot.session.post(
-            "https://vlang.io/play",
+        async with await self.bot.session.post(
+            "https://play.vlang.io/run",
             data = { "code": code.content },
         ) as response:
+            text = await response.text()
             await ctx.reply(
-                "```\n" + response.text.replace("`", "\u200B`\u200B") + "\n```"
+                "```\n" + text.replace("`", "\u200B`\u200B") + "\n```"
             )  # Zero-width space.
 
 

@@ -32,11 +32,11 @@ class ReplBot(CommandsBot):
             command_prefix = when_mentioned_or("&"),
             strip_after_prefix = True,
             case_insensitive = True,
-            status = Game("on play.minearchy.com"),
-            owner_ids = { 512640455834337290 },
+            status = Game("in the V playground"),
             allowed_mentions = AllowedMentions.none(),
             max_messages = 100,
             intents = Intents(
+                guilds = True,
                 messages = True,
                 message_content = True,
             ),
