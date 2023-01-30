@@ -1,0 +1,10 @@
+*
+
+!.gitignore
+!bot/
+!bot/cogs/
+!poetry.lock
+!*.py
+!*.example.json
+!*.md
+!*.toml

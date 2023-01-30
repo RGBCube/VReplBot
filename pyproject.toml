@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "v-repl-bot"
+version = "1.0.0"
+description = "A simple Discord bot that runs your V code. "
+authors = ["RGBCube"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = { version = "*", extras = ["speed"] }
+jishaku = "*"
+uvloop = "*"
+
+[tool.poetry.scripts]
+bot = "bot.__main__:main"
