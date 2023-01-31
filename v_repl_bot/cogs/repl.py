@@ -69,8 +69,8 @@ class REPL(
 
     @command(
         aliases = ("download",),
-        brief = "Shows the code in a V playground query.",
-        help = "Shows the code in a V playground query."
+        brief = "Shows the code in a V playground link.",
+        help = "Shows the code in a V playground link."
     )
     async def show(self, ctx: Context, query: str | None = None) -> None:
         if not query:
