@@ -26,10 +26,10 @@ async def get_message_content(channel: TextChannel, ref: MessageReference) -> st
         return message.content
 
 
-class REPL(
+class Playground(
     Cog,
-    name = "REPL",
-    description = "REPL (Read, Eval, Print, Loop) commands.",
+    name = "Playground",
+    description = "V Playground commands.",
 ):
     def __init__(self, bot: ReplBot) -> None:
         self.bot = bot
@@ -138,4 +138,4 @@ class REPL(
 
 
 async def setup(bot: ReplBot) -> None:
-    await bot.add_cog(REPL(bot))
+    await bot.add_cog(Playground(bot))
