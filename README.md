@@ -2,6 +2,8 @@
 
 A simple Discord bot that runs your V code.
 
+[Invite the public instance!](https://discord.com/api/oauth2/authorize?client_id=1069656041635192862&permissions=274878024704&scope=applications.commands%20bot)
+
 ## Installation
 
 ```sh
