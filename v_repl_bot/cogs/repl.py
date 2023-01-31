@@ -8,9 +8,18 @@ from discord.ext.commands import Cog, command, param
 from jishaku.codeblocks import Codeblock, codeblock_converter
 
 if TYPE_CHECKING:
+    from discord import MessageReference, TextChannel
     from discord.ext.commands import Context
 
     from .. import ReplBot
+
+
+async def get_message_content(channel: TextChannel, ref: MessageReference) -> str:
+    if ref.resolved:
+        return ref.resolved.content
+    else:
+        message = await channel.fetch_message(ref.message_id)
+        return message.content
 
 
 class REPL(
@@ -32,9 +41,13 @@ class REPL(
         *,
         code: Codeblock | None = param(converter = codeblock_converter, default = None)
     ) -> None:
-        if code is None:
-            await ctx.reply("No code provided.")
-            return
+        if not code:
+            if not (reply := ctx.message.reference):
+                await ctx.reply("No code provided.")
+                return
+
+            content = await get_message_content(ctx.channel, reply)
+            code = codeblock_converter(content)
 
         async with await self.bot.session.post(
             "https://play.vlang.io/run",
@@ -60,13 +73,12 @@ class REPL(
         help = "Shows the code in a V playground query."
     )
     async def show(self, ctx: Context, query: str | None = None) -> None:
-        if query is None:
+        if not query:
             if not (reply := ctx.message.reference):
                 await ctx.reply("No query provided.")
                 return
 
-            replied_message = await ctx.channel.fetch_message(reply.message_id)
-            content = replied_message.content
+            content = await get_message_content(ctx.channel, reply)
 
             if "play.vlang.io/?query=" in content:
                 query = content.split("play.vlang.io/?query=", 1)[1].split(" ", 1)[0]
@@ -84,6 +96,7 @@ class REPL(
             data = { "hash": query }
         ) as response:
             text = await response.text()
+            text = text.replace("`", "\u200B`\u200B")  # Zero-width space.
 
             if text == "Not found.":
                 await ctx.reply("Invalid link.")
