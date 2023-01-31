@@ -58,7 +58,6 @@ class ReplBot(CommandsBot):
         )
 
         self.ready_timestamp = get_time()
-        await self.log_webhook.send("Bot is now online!")
 
     async def load_extensions(self) -> None:
         cogs = Path(__file__).parent / "cogs"
