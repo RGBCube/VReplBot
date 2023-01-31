@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from io import BytesIO
-from typing import TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING
 
 from discord import File
 from discord.ext.commands import Cog, command, param
@@ -12,6 +12,10 @@ if TYPE_CHECKING:
     from discord.ext.commands import Context
 
     from .. import ReplBot
+
+
+def sanitize_str_for_codeblock(string: str) -> str:
+    return string.replace("`", "\u200B`\u200B")  # Zero-width space.
 
 
 async def get_message_content(channel: TextChannel, ref: MessageReference) -> str:
@@ -30,16 +34,12 @@ class REPL(
     def __init__(self, bot: ReplBot) -> None:
         self.bot = bot
 
-    @command(
-        aliases = ("run", "repl"),
-        brief = "Runs V code.",
-        help = "Runs V code."
-    )
-    async def eval(
+    async def run_test_common(
         self,
         ctx: Context,
+        code: Codeblock | None,
         *,
-        code: Codeblock | None = param(converter = codeblock_converter, default = None)
+        type: Literal["run"] | Literal["run_test"]
     ) -> None:
         if not code:
             if not (reply := ctx.message.reference):
@@ -50,11 +50,10 @@ class REPL(
             code = codeblock_converter(content)
 
         async with await self.bot.session.post(
-            "https://play.vlang.io/run",
+            f"https://play.vlang.io/{type}",
             data = { "code": code.content },
         ) as response:
-            text = await response.text()
-            text = text.replace("`", "\u200B`\u200B")  # Zero-width space.
+            text = sanitize_str_for_codeblock(await response.text())
 
             if len(text) + 6 > 2000:
                 await ctx.reply(
@@ -66,6 +65,31 @@ class REPL(
             await ctx.reply(
                 "```" + text + "```"
             )
+
+    @command(
+        aliases = ("eval", "repl"),
+        brief = "Runs V code.",
+        help = "Runs V code."
+    )
+    async def run(
+        self,
+        ctx: Context,
+        *,
+        code: Codeblock | None = param(converter = codeblock_converter, default = None)
+    ) -> None:
+        await self.run_test_common(ctx, code, type = "run")
+
+    @command(
+        brief = "Runs tests of V code.",
+        help = "Runs tests of V code."
+    )
+    async def test(
+        self,
+        ctx: Context,
+        *,
+        code: Codeblock | None = param(converter = codeblock_converter, default = None)
+    ) -> None:
+        await self.run_test_common(ctx, code, type = "run_test")
 
     @command(
         aliases = ("download",),
@@ -95,8 +119,7 @@ class REPL(
             f"https://play.vlang.io/query",
             data = { "hash": query }
         ) as response:
-            text = await response.text()
-            text = text.replace("`", "\u200B`\u200B")  # Zero-width space.
+            text = sanitize_str_for_codeblock(await response.text())
 
             if text == "Not found.":
                 await ctx.reply("Invalid link.")
