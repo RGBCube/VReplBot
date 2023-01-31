@@ -49,15 +49,13 @@ class Playground(
             content = await get_message_content(ctx.channel, reply)
             code = codeblock_converter(content)
 
-        print(code.content)
         async with await self.bot.session.post(
             f"https://play.vlang.io/{type}",
             data = { "code": code.content },
         ) as response:
-            print(await response.text())
             text = sanitize_str_for_codeblock(await response.text())
 
-            if len(text) + 6 > 2000:
+            if len(text) + 7 > 2000:
                 await ctx.reply(
                     "The output was too long to be sent as a message. Here is a file instead:",
                     file = File(BytesIO(text.encode()), filename = "output.txt")
@@ -65,7 +63,7 @@ class Playground(
                 return
 
             await ctx.reply(
-                "```" + text + "```"
+                "```\n" + text + "```"
             )
 
     @command(
