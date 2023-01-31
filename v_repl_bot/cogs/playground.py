@@ -49,10 +49,12 @@ class Playground(
             content = await get_message_content(ctx.channel, reply)
             code = codeblock_converter(content)
 
+        print(code.content)
         async with await self.bot.session.post(
             f"https://play.vlang.io/{type}",
             data = { "code": code.content },
         ) as response:
+            print(await response.text())
             text = sanitize_str_for_codeblock(await response.text())
 
             if len(text) + 6 > 2000:
