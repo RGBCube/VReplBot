@@ -37,26 +37,26 @@ class Playground(
     async def run_test_common(
         self,
         ctx: Context,
-        code: str | None,
+        code_or_query: str | None,
         *,
         type: Literal["run"] | Literal["run_test"]
     ) -> None:
-        if not code:
+        if not code_or_query:
             if not (reply := ctx.message.reference):
                 await ctx.reply("No code provided.")
                 return
 
-            content = await get_message_content(ctx.channel, reply)
+            code_or_query = await get_message_content(ctx.channel, reply)
 
-            if (c_stripped := content.lstrip("https://")).startswith("play.vlang.io/?query="):
-                query = c_stripped.lstrip("play.vlang.io/?query=").split(" ", 1)[0]
-                code = await self.get_query_content(query)
+        if (c_stripped := code_or_query.lstrip("https://")).startswith("play.vlang.io/?query="):
+            query = c_stripped.lstrip("play.vlang.io/?query=").split(" ", 1)[0]
+            code = await self.get_query_content(query)
 
-                if not code:
-                    await ctx.reply("Invalid query.")
-                    return
-            else:
-                code = codeblock_converter(content).content
+            if not code:
+                await ctx.reply("Invalid query.")
+                return
+        else:
+            code = codeblock_converter(code_or_query).content
 
         async with await self.bot.session.post(
             f"https://play.vlang.io/{type}",
