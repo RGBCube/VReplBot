@@ -33,7 +33,6 @@ class Playground(
             text = await response.text()
 
             if text == "Not found.":
-                print(f"Query {query} not found.")
                 await ctx.reply("Invalid query.")
                 raise StopCommandExecution()
 
@@ -183,7 +182,7 @@ class Playground(
                 await ctx.reply("No query provided.")
                 return
         else:
-            query = self.extract_link_query(query) or query
+            query = self.extract_link_query(query)
 
         code = await self.get_code(ctx, query)
         sanitized_code = self.sanitize(code)
