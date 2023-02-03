@@ -73,7 +73,8 @@ class Playground(
 
     @staticmethod
     def grep_code(content: str) -> str:
-        content = "`" + content.split("`", 1)[1].rsplit("`", 1)[0] + "`"
+        content = "`" + (splitted := content.split("`", 1))[len(splitted) - 1].rsplit("`", 1)[
+            0] + "`"
 
         return codeblock_converter(content).content
 
