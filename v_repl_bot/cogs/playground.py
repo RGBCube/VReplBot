@@ -63,6 +63,7 @@ class Playground(
             data = { "code": code },
         ) as response:
             body = await response.json()
+            print(body)
             text = sanitize_str_for_codeblock(body["output"])
 
             if len(text) + 7 > 2000:
