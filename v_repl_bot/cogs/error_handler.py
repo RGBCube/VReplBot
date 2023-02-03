@@ -23,6 +23,10 @@ if TYPE_CHECKING:
     from .. import ReplBot
 
 
+class StopCommandExecution(Exception):
+    pass
+
+
 class ErrorHandler(Cog):
     def __init__(self, bot: ReplBot) -> None:
         self.bot = bot
@@ -36,7 +40,7 @@ class ErrorHandler(Cog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (CommandNotFound,)
+        ignored = (CommandNotFound, StopCommandExecution)
         error = getattr(error, "original", error)
 
         if isinstance(error, ignored):
