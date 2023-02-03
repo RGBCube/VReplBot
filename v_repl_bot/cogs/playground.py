@@ -91,8 +91,10 @@ class Playground(
 
     @staticmethod
     def extract_link_query(content: str) -> str | None:
-        if (no_http_content := content.lstrip("https://")).startswith("play.vlang.io/?query="):
-            return no_http_content.lstrip("play.vlang.io/?query=").split(" ", 1)[0]
+        if (no_http_content := content.removeprefix("https://")).startswith(
+            "play.vlang.io/?query="
+        ):
+            return no_http_content.removeprefix("play.vlang.io/?query=").split(" ", 1)[0]
 
     @staticmethod
     def sanitize(string: str) -> str:
