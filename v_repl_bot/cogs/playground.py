@@ -28,7 +28,7 @@ class Playground(
     async def get_code(self, ctx: Context, query: str) -> str:
         async with await self.bot.session.post(
             f"https://play.vlang.io/query",
-            data = { "hash": query }
+            data = { "hash": query.removesuffix(">") }
         ) as response:
             text = await response.text()
 
@@ -116,7 +116,6 @@ class Playground(
             content = await self.get_message_content(ctx.channel, ref)
 
             if query := self.grep_link_query(content):
-                print(query)
                 code = await self.get_code(ctx, query)
             else:
                 code = self.grep_code(content)
