@@ -53,9 +53,12 @@ class Miscellaneous(
         await ctx.reply(
             strip(
                 f"""
-            __**Bot Info**__
-            **Python Version:** v{python_version()}
-            **Uptime:** `{TimeDelta(seconds = int(get_time() - self.bot.ready_timestamp))}`
+            ```
+            Bot Info
+            ========
+            Python Version: v{python_version()}
+            Uptime:         {TimeDelta(seconds = int(get_time() - self.bot.ready_timestamp))}
+            ```
             """
             )
         )

@@ -25,8 +25,8 @@ class ReplBot(CommandsBot):
     session: AIOHTTPSession
 
     def __init__(self, *, token: str, webhook_url: str) -> None:
-        self.token = token
-        self.webhook_url = webhook_url
+        self.__token = token
+        self.__webhook_url = webhook_url
 
         super().__init__(
             command_prefix = when_mentioned_or("&"),
@@ -78,10 +78,10 @@ class ReplBot(CommandsBot):
         async def runner() -> None:
             async with self, AIOHTTPSession() as self.session:
                 self.log_webhook = Webhook.from_url(
-                    self.webhook_url, session = self.session, bot_token = self.token
+                    self.__webhook_url, session = self.session, bot_token = self.__token
                 )
                 await self.load_extensions()
-                await self.start(self.token)
+                await self.start(self.__token)
 
         try:
             asyncio.run(runner())
