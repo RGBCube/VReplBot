@@ -51,7 +51,7 @@ class Playground(
             data = { "code": code },
         ) as response:
             body = json.loads(await response.text())
-
+            print(body, type(body))
             return body["ok"], body["output"]
 
     async def test_code(self, code: str) -> tuple[bool, str]:
