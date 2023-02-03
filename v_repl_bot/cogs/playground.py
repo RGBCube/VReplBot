@@ -33,6 +33,7 @@ class Playground(
             text = await response.text()
 
             if text == "Not found.":
+                print(f"Query {query} not found.")
                 await ctx.reply("Invalid query.")
                 raise StopCommandExecution()
 
