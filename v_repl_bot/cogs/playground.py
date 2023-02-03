@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from io import BytesIO
 from typing import Literal, TYPE_CHECKING
 
@@ -62,8 +63,7 @@ class Playground(
             f"https://play.vlang.io/{type}",
             data = { "code": code },
         ) as response:
-            body = await response.json()
-            print(body)
+            body = json.loads(await response.text())
             text = sanitize_str_for_codeblock(body["output"])
 
             if len(text) + 7 > 2000:
