@@ -4,8 +4,8 @@ from io import BytesIO
 from typing import Literal, TYPE_CHECKING
 
 from discord import File
-from discord.ext.commands import Cog, command, param
-from jishaku.codeblocks import Codeblock, codeblock_converter
+from discord.ext.commands import Cog, command
+from jishaku.codeblocks import codeblock_converter
 
 if TYPE_CHECKING:
     from discord import MessageReference, TextChannel
@@ -37,23 +37,32 @@ class Playground(
     async def run_test_common(
         self,
         ctx: Context,
-        code: Codeblock | None,
+        code: str | None,
         *,
         type: Literal["run"] | Literal["run_test"]
     ) -> None:
-        if not code:
+        if (c_stripped := code.lstrip("https://")).startswith("play.vlang.io/?query="):
+            query = c_stripped.lstrip("play.vlang.io/?query=").split(" ", 1)[0]
+            code = await self.get_query_content(query)
+
+            if not code:
+                await ctx.reply("Invalid query.")
+                return
+
+        elif not code:
             if not (reply := ctx.message.reference):
                 await ctx.reply("No code provided.")
                 return
 
             content = await get_message_content(ctx.channel, reply)
-            code = codeblock_converter(content)
+            code = codeblock_converter(content).content
 
         async with await self.bot.session.post(
             f"https://play.vlang.io/{type}",
-            data = { "code": code.content },
+            data = { "code": code },
         ) as response:
-            text = sanitize_str_for_codeblock(await response.text())
+            body = await response.json()
+            text = sanitize_str_for_codeblock(body["output"])
 
             if len(text) + 7 > 2000:
                 await ctx.reply(
@@ -75,9 +84,9 @@ class Playground(
         self,
         ctx: Context,
         *,
-        code: Codeblock | None = param(converter = codeblock_converter, default = None)
+        query_or_code: str | None = None
     ) -> None:
-        await self.run_test_common(ctx, code, type = "run")
+        await self.run_test_common(ctx, query_or_code, type = "run")
 
     @command(
         brief = "Runs tests of V code.",
@@ -87,9 +96,21 @@ class Playground(
         self,
         ctx: Context,
         *,
-        code: Codeblock | None = param(converter = codeblock_converter, default = None)
+        query_or_code: str | None = None
     ) -> None:
-        await self.run_test_common(ctx, code, type = "run_test")
+        await self.run_test_common(ctx, query_or_code, type = "run_test")
+
+    async def get_query_content(self, query: str) -> str | None:
+        async with await self.bot.session.post(
+            f"https://play.vlang.io/query",
+            data = { "hash": query }
+        ) as response:
+            text = sanitize_str_for_codeblock(await response.text())
+
+            if text == "Not found.":
+                return None
+
+            return text
 
     @command(
         aliases = ("download",),
@@ -115,26 +136,22 @@ class Playground(
             await ctx.reply("No query provided.")
             return
 
-        async with await self.bot.session.post(
-            f"https://play.vlang.io/query",
-            data = { "hash": query }
-        ) as response:
-            text = sanitize_str_for_codeblock(await response.text())
+        code = await self.get_query_content(query)
 
-            if text == "Not found.":
-                await ctx.reply("Invalid link.")
-                return
+        if not code:
+            await ctx.reply("Invalid link.")
+            return
 
-            if len(text) + 8 > 2000:
-                await ctx.reply(
-                    "The code was too long to be sent as a message. Here is a file instead:",
-                    file = File(BytesIO(text.encode()), filename = "code.v")
-                )
-                return
-
+        if len(code) + 8 > 2000:
             await ctx.reply(
-                "```v\n" + text + "```"
+                "The code was too long to be sent as a message. Here is a file instead:",
+                file = File(BytesIO(code.encode()), filename = "code.v")
             )
+            return
+
+        await ctx.reply(
+            "```v\n" + code + "```"
+        )
 
 
 async def setup(bot: ReplBot) -> None:
