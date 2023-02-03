@@ -215,7 +215,7 @@ class Playground(
 
         link = await self.share_code(code)
 
-        await ctx.reply(f"<{link}>")
+        await ctx.reply(f"<https://play.vlang.io/?query={link}>")
 
 
 async def setup(bot: ReplBot) -> None:
