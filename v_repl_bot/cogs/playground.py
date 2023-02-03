@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json
+import ast
 from io import BytesIO
 from typing import Literal, TYPE_CHECKING
 
@@ -50,8 +50,8 @@ class Playground(
             f"https://play.vlang.io/run",
             data = { "code": code },
         ) as response:
-            body = json.loads(await response.text())
-            print(body, type(body))
+            body = ast.literal_eval(await response.text())
+
             return body["ok"], body["output"]
 
     async def test_code(self, code: str) -> tuple[bool, str]:
@@ -59,7 +59,7 @@ class Playground(
             f"https://play.vlang.io/run_test",
             data = { "code": code },
         ) as response:
-            body = json.loads(await response.text())
+            body = ast.literal_eval(await response.text())
 
             return body["ok"], body["output"]
 
