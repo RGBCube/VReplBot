@@ -116,6 +116,7 @@ class Playground(
             content = await self.get_message_content(ctx.channel, ref)
 
             if query := self.grep_link_query(content):
+                print(query)
                 code = await self.get_code(ctx, query)
             else:
                 code = self.grep_code(content)
@@ -181,11 +182,12 @@ class Playground(
 
             query = self.grep_link_query(content)
 
-            if not query:
-                await ctx.reply("No query provided.")
-                return
         else:
             query = self.extract_link_query(query)
+
+        if not query:
+            await ctx.reply("No query provided.")
+            return
 
         code = await self.get_code(ctx, query)
         sanitized_code = self.sanitize(code)
