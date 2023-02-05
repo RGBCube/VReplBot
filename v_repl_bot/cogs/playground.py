@@ -28,7 +28,7 @@ class Playground(
     async def get_code(self, ctx: Context, query: str) -> str:
         async with await self.bot.session.post(
             f"https://play.vlang.io/query",
-            data = { "hash": query.removesuffix(">") }
+            data = { "hash": query }
         ) as response:
             text = await response.text()
 
@@ -83,7 +83,7 @@ class Playground(
         if "play.vlang.io/?query=" not in content:
             return None
 
-        query = content.split("play.vlang.io/?query=", 1)[1].split(" ", 1)[0]
+        query = content.split("play.vlang.io/?query=", 1)[1].split(" ", 1)[0].removesuffix(">")
 
         if not query:  # Empty string.
             return None
@@ -92,10 +92,11 @@ class Playground(
 
     @staticmethod
     def extract_link_query(content: str) -> str | None:
-        if (no_http_content := content.removeprefix("https://")).startswith(
+        if (no_http_content := content.removeprefix("<").removeprefix("https://")).startswith(
             "play.vlang.io/?query="
         ):
-            return no_http_content.removeprefix("play.vlang.io/?query=").split(" ", 1)[0]
+            return no_http_content.removeprefix("play.vlang.io/?query=").split(" ", 1)[
+                0].removesuffix(">")
 
     @staticmethod
     def sanitize(string: str) -> str:
