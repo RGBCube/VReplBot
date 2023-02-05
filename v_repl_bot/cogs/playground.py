@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import json
 from io import BytesIO
 from typing import Literal, TYPE_CHECKING
 
@@ -50,7 +51,7 @@ class Playground(
             f"https://play.vlang.io/run",
             data = { "code": code },
         ) as response:
-            body = ast.literal_eval(await response.text())
+            body = json.loads(await response.json(encoding = "utf-8"))
 
             return body["ok"], body["output"]
 
