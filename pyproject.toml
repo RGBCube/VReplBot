@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "v-repl-bot"
+name = "VReplBot"
 version = "1.0.0"
 description = "A simple Discord bot that runs your V code. "
 authors = ["RGBCube"]

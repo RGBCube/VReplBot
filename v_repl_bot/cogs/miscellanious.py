@@ -43,7 +43,7 @@ class Miscellaneous(
     )
     async def github(self, ctx: Context) -> None:
         # Not a button since I want the embed.
-        await ctx.reply("https://github.com/RGBCube/v-repl-bot")
+        await ctx.reply("https://github.com/RGBCube/VReplBot")
 
     @command(
         brief = "Sends info about the bot.",

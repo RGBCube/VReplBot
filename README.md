@@ -1,4 +1,4 @@
-# v-repl-bot
+# VReplBot
 
 A simple Discord bot that runs your V code.
 
@@ -19,7 +19,7 @@ A simple Discord bot that runs your V code.
 ## License
 
 ```
-v-repl-bot - A simple Discord bot that runs your V code.
+VReplBot - A simple Discord bot that runs your V code.
 Copyright (C) 2023-present  RGBCube
 
 This program is free software: you can redistribute it and/or modify
